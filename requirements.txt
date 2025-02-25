@@ -1,9 +1,4 @@
 streamlit
 openai
-streamlit
-openai
-yfinance
-streamlit
-openai
 yfinance
 matplotlib
