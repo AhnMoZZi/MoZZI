@@ -1,0 +1,33 @@
+name: Streamlit Auto Deploy
+
+on:
+  push:
+    branches:
+      - main  # 🚨 main 브랜치에 코드 변경이 발생하면 자동으로 배포
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 클론
+        uses: actions/checkout@v3
+
+      - name: Python 설정
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 의존성 설치
+        run: |
+          pip install -r requirements.txt
+
+      - name: Streamlit 실행 테스트
+        run: |
+          streamlit run app.py --server.headless true
+
+      - name: 오류 발생 시 GitHub Issues 생성
+        if: failure()
+        run: |
+          gh issue create -t "⚠ Streamlit 앱 오류 발생" -b "오류 로그 확인 후 조치 필요!" --repo YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
