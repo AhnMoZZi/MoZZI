@@ -1,12 +1,14 @@
 import streamlit as st
-import pandas as pd
-import requests
 import openai
+import os
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# 🔹 OpenAI API 키 설정
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
+# 🔹 환경 변수에서 OpenAI API 키 가져오기
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+
+# 🔹 OpenAI 클라이언트 생성 (최신 방식)
+openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 # 🔹 금 / 환율 / 비트코인 실시간 데이터 가져오기
 def get_market_data(symbol):
@@ -17,13 +19,13 @@ def get_market_data(symbol):
 def predict_price(trend_data, asset_name):
     prompt = f"Here is the price trend for {asset_name}:\n\n{trend_data}\n\nBased on this trend, will the price go up or down tomorrow?"
     
-    response = openai.ChatCompletion.create(
+    response = openai_client.chat_completions.create(
         model="gpt-4",
         messages=[{"role": "system", "content": "You are a financial analyst."},
                   {"role": "user", "content": prompt}]
     )
     
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 # 🔹 Streamlit UI 설정
 st.title("📈 AI 기반 가격 예측 앱")
@@ -42,3 +44,4 @@ st.subheader("📊 AI 예측 결과")
 trend_data = data["Close"].to_string()
 prediction = predict_price(trend_data, option)
 st.write(f"🔮 **AI 분석:** {prediction}")
+
