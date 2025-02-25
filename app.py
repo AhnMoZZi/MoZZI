@@ -12,7 +12,7 @@ else:
     st.stop()
 
 # 🔹 OpenAI 클라이언트 생성 (최신 API 방식 적용)
-openai.api_key = OPENAI_API_KEY  # ✅ API 키를 직접 설정하는 방식으로 변경!
+client = openai.OpenAI(api_key=OPENAI_API_KEY)  # ✅ 최신 방식 적용
 
 # 🔹 금 / 환율 / 비트코인 실시간 데이터 가져오기
 def get_market_data(symbol):
@@ -23,13 +23,13 @@ def get_market_data(symbol):
 def predict_price(trend_data, asset_name):
     prompt = f"Here is the price trend for {asset_name}:\n\n{trend_data}\n\nBased on this trend, will the price go up or down tomorrow?"
     
-    response = openai.ChatCompletion.create(  # ✅ 최신 OpenAI 문법으로 변경!
+    response = client.chat.completions.create(  # ✅ 최신 OpenAI 방식 적용!
         model="gpt-4",
         messages=[{"role": "system", "content": "You are a financial analyst."},
                   {"role": "user", "content": prompt}]
     )
     
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content  # ✅ 최신 방식으로 응답 가져오기
 
 # 🔹 Streamlit UI 설정
 st.title("📈 AI 기반 가격 예측 앱")
