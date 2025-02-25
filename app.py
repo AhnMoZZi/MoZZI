@@ -4,8 +4,12 @@ import os
 import yfinance as yf
 import matplotlib.pyplot as plt
 
-# 🔹 환경 변수에서 OpenAI API 키 가져오기
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+# 🔹 환경 변수에서 OpenAI API 키 가져오기 (예외 처리 추가!)
+if "OPENAI_API_KEY" in st.secrets:
+    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+else:
+    st.error("🔴 ERROR: OpenAI API Key가 설정되지 않았습니다!")
+    st.stop()
 
 # 🔹 OpenAI 클라이언트 생성 (최신 방식)
 openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
